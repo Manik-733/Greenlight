@@ -1,0 +1,297 @@
+@import "@fontsource/playfair-display/400.css";
+@import "@fontsource/playfair-display/500.css";
+@import "@fontsource/playfair-display/600.css";
+@import "@fontsource/playfair-display/700.css";
+@import "@fontsource/inter/300.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  BMDB Design System
+  Cinematic, festival-catalogue aesthetic
+  Deep blacks, warm cream, gold accents
+*/
+
+@layer base {
+  :root {
+    /* Core palette - Deep cinematic blacks */
+    --background: 240 6% 4%;
+    --foreground: 40 33% 94%;
+
+    /* Card surfaces - Slightly elevated */
+    --card: 240 5% 7%;
+    --card-foreground: 40 33% 94%;
+
+    /* Popover/Dialog surfaces */
+    --popover: 240 5% 8%;
+    --popover-foreground: 40 33% 94%;
+
+    /* Primary - Gold accent */
+    --primary: 43 45% 59%;
+    --primary-foreground: 240 6% 4%;
+
+    /* Secondary - Muted surface */
+    --secondary: 240 4% 12%;
+    --secondary-foreground: 40 20% 80%;
+
+    /* Muted elements */
+    --muted: 240 4% 14%;
+    --muted-foreground: 40 10% 55%;
+
+    /* Accent - Subtle gold glow */
+    --accent: 43 35% 20%;
+    --accent-foreground: 43 45% 70%;
+
+    /* Destructive */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs */
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 43 45% 59%;
+
+    --radius: 0.5rem;
+
+    /* Status colors */
+    --status-verified: 142 70% 45%;
+    --status-pending: 43 90% 55%;
+    --status-unclaimed: 220 14% 50%;
+    --status-rejected: 0 72% 51%;
+    --status-disputed: 25 95% 53%;
+
+    /* Sidebar */
+    --sidebar-background: 240 5% 6%;
+    --sidebar-foreground: 40 20% 80%;
+    --sidebar-primary: 43 45% 59%;
+    --sidebar-primary-foreground: 240 6% 4%;
+    --sidebar-accent: 240 4% 12%;
+    --sidebar-accent-foreground: 40 20% 80%;
+    --sidebar-border: 240 4% 14%;
+    --sidebar-ring: 43 45% 59%;
+
+    /* Custom design tokens */
+    --gold: 43 45% 59%;
+    --gold-dim: 43 35% 40%;
+    --gold-glow: 43 60% 70%;
+    --cream: 40 33% 94%;
+    --cream-dim: 40 20% 70%;
+    --charcoal: 240 6% 4%;
+    --charcoal-light: 240 5% 10%;
+
+    /* Typography */
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(
+      180deg,
+      hsl(240 6% 4% / 0) 0%,
+      hsl(240 6% 4%) 100%
+    );
+    --gradient-card: linear-gradient(
+      145deg,
+      hsl(240 5% 9%) 0%,
+      hsl(240 5% 6%) 100%
+    );
+    --gradient-gold: linear-gradient(
+      135deg,
+      hsl(43 45% 59%) 0%,
+      hsl(35 50% 45%) 100%
+    );
+
+    /* Shadows */
+    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 8px 40px -8px hsl(0 0% 0% / 0.5);
+    --shadow-gold: 0 0 40px -10px hsl(43 45% 59% / 0.3);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    @apply tracking-tight;
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+
+  .text-cream {
+    color: hsl(var(--cream));
+  }
+
+  .text-cream-dim {
+    color: hsl(var(--cream-dim));
+  }
+
+  .bg-charcoal {
+    background-color: hsl(var(--charcoal));
+  }
+
+  .bg-charcoal-light {
+    background-color: hsl(var(--charcoal-light));
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  /* Film grain overlay effect */
+  .film-grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+  }
+
+  /* Cinematic letterbox effect */
+  .letterbox {
+    position: relative;
+  }
+
+  .letterbox::before,
+  .letterbox::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 8%;
+    background: hsl(var(--charcoal));
+    z-index: 10;
+  }
+
+  .letterbox::before {
+    top: 0;
+  }
+
+  .letterbox::after {
+    bottom: 0;
+  }
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
