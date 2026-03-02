@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClientServer } from "@/lib/supabase/server";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
 interface ProfileResponse {
   user_id: string;
   username: string | null;
@@ -14,7 +20,7 @@ interface ProfileResponse {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: { username: string } },
 ) {
   try {
     const username = params.username;
@@ -22,9 +28,11 @@ export async function GET(
     if (!username) {
       return NextResponse.json(
         { error: "Username is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
+
+    console.log("Fetching profile for username:", username);
 
     const supabase = createClientServer();
 
@@ -34,6 +42,12 @@ export async function GET(
       .select("user_id, username, display_name, bio, avatar_url, created_at")
       .eq("username", username)
       .single();
+
+    console.log("Profile lookup result:", {
+      username,
+      found: !!profile,
+      error: profileError?.message,
+    });
 
     if (profileError || !profile) {
       console.error("Profile not found:", profileError);
@@ -59,10 +73,7 @@ export async function GET(
       .eq("role", "OWNER");
 
     if (projectsError) {
-      console.error(
-        "Error fetching owned projects:",
-        projectsError
-      );
+      console.error("Error fetching owned projects:", projectsError);
     }
 
     let projectsCount = 0;
@@ -87,12 +98,19 @@ export async function GET(
       projects_count: projectsCount,
     };
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, { headers: corsHeaders });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500, headers: corsHeaders },
     );
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
 }

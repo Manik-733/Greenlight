@@ -82,7 +82,7 @@ export default function Register() {
         formData.email,
         formData.password,
         formData.username.toLowerCase(),
-        formData.displayName
+        formData.displayName,
       );
 
       // If we get here and user is set, sign-up was successful
@@ -91,7 +91,7 @@ export default function Register() {
         setTimeout(() => navigate("/discover"), 1500);
       } else {
         setSuccess(
-          "Account created! Please check your email to confirm your registration."
+          "Account created! Please check your email to confirm your registration.",
         );
       }
     } catch (err) {
@@ -124,7 +124,7 @@ export default function Register() {
         >
           <div className="text-center mb-8">
             <h1 className="font-display text-3xl font-bold text-foreground">
-              Join BMDB
+              Join Greenlight
             </h1>
             <p className="mt-2 text-muted-foreground">
               Your profile becomes your public filmography

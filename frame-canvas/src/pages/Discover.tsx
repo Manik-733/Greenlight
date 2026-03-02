@@ -92,9 +92,7 @@ export default function Discover() {
   } = useQuery({
     queryKey: ["discover"],
     queryFn: async () => {
-      const response = await apiClient.get<DiscoverResponse>(
-        "/projects/discover"
-      );
+      const response = await apiClient.get<DiscoverResponse>("/discover");
       return response;
     },
   });
@@ -158,7 +156,7 @@ export default function Discover() {
               <ChevronDown
                 className={cn(
                   "h-4 w-4 ml-2 transition-transform",
-                  showFilters && "rotate-180"
+                  showFilters && "rotate-180",
                 )}
               />
             </Button>

@@ -1,16 +1,16 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Search, ArrowRight, Star, Film, Users } from 'lucide-react';
-import { useState } from 'react';
-import { Layout } from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ProjectCard } from '@/components/project/ProjectCard';
-import { mockDiscoverySections, mockProjects } from '@/lib/mock-data';
-import heroBg from '@/assets/hero-bg.jpg';
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Search, ArrowRight, Star, Film, Users } from "lucide-react";
+import { useState } from "react";
+import { Layout } from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ProjectCard } from "@/components/project/ProjectCard";
+import { mockDiscoverySections, mockProjects } from "@/lib/mock-data";
+import heroBg from "@/assets/hero-bg.jpg";
 
 export default function Index() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
           <img
@@ -35,26 +35,26 @@ export default function Index() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 container mx-auto px-6 lg:px-12 text-center">
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto"
+            className="max-w-7xl mx-auto"
           >
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight">
+            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground leading-tight tracking-tight">
               Where Filmmakers
               <br />
               <span className="text-primary">Build Their Legacy</span>
             </h1>
-            
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              The definitive database for student and independent cinema. 
+
+            <p className="mt-10 text-2xl md:text-3xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+              The definitive database for student and independent cinema.
               Showcase your work. Build your filmography. Get discovered.
             </p>
 
             {/* Search */}
-            <form onSubmit={handleSearch} className="mt-10 max-w-xl mx-auto">
+            <form onSubmit={handleSearch} className="mt-14 max-w-2xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
@@ -62,12 +62,12 @@ export default function Index() {
                   placeholder="Search projects, filmmakers, roles..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 h-14 text-base bg-card/80 backdrop-blur-sm border-border/50"
+                  className="pl-12 h-16 text-lg bg-card/80 backdrop-blur-sm border-border/50"
                 />
                 <Button
                   type="submit"
                   variant="gold"
-                  size="sm"
+                  size="lg"
                   className="absolute right-2 top-1/2 -translate-y-1/2"
                 >
                   Search
@@ -76,7 +76,7 @@ export default function Index() {
             </form>
 
             {/* CTAs */}
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link to="/register">
                 <Button variant="hero" size="xl" className="group">
                   Create Your Profile
@@ -108,10 +108,10 @@ export default function Index() {
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: Film, value: '2,400+', label: 'Projects' },
-              { icon: Users, value: '8,500+', label: 'Filmmakers' },
-              { icon: Star, value: '45,000+', label: 'Ratings' },
-              { icon: Film, value: '150+', label: 'Film Schools' },
+              { icon: Film, value: "2,400+", label: "Projects" },
+              { icon: Users, value: "8,500+", label: "Filmmakers" },
+              { icon: Star, value: "45,000+", label: "Ratings" },
+              { icon: Film, value: "150+", label: "Film Schools" },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -122,8 +122,12 @@ export default function Index() {
                 className="text-center"
               >
                 <stat.icon className="h-6 w-6 text-primary mx-auto mb-3" />
-                <div className="font-display text-3xl font-bold text-foreground">{stat.value}</div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
+                <div className="font-display text-3xl font-bold text-foreground">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {stat.label}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -145,7 +149,9 @@ export default function Index() {
                   {section.title}
                 </h2>
                 {section.subtitle && (
-                  <p className="mt-2 text-muted-foreground">{section.subtitle}</p>
+                  <p className="mt-2 text-muted-foreground">
+                    {section.subtitle}
+                  </p>
                 )}
               </div>
               <Link
@@ -159,11 +165,7 @@ export default function Index() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {section.projects.map((project, index) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  index={index}
-                />
+                <ProjectCard key={project.id} project={project} index={index} />
               ))}
             </div>
           </div>
@@ -184,8 +186,8 @@ export default function Index() {
               Ready to Build Your Filmography?
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
-              Join thousands of filmmakers who use BMDB to showcase their work 
-              and connect with the industry.
+              Join thousands of filmmakers who use Greenlight to showcase their
+              work and connect with the industry.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/register">

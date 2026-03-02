@@ -367,7 +367,7 @@ CREATE POLICY "Users can view public profiles"
 
 CREATE POLICY "Users can insert their own profile"
   ON profiles FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK (auth.uid() = user_id OR auth.role() = 'service_role');
 
 CREATE POLICY "Users can update their own profile"
   ON profiles FOR UPDATE

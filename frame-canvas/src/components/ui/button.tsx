@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "text-foreground hover:bg-secondary hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // BMDB custom variants
+        // Greenlight custom variants
         gold: "bg-primary text-primary-foreground hover:shadow-gold hover:bg-gold-glow transition-all duration-300",
         "gold-outline": "border border-primary/50 bg-transparent text-primary hover:bg-primary/10 hover:border-primary",
         cinematic: "bg-card border border-border text-foreground hover:bg-secondary hover:border-primary/30 shadow-card",

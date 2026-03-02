@@ -10,13 +10,21 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
+  RefreshCw,
 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useApiClient } from "@/lib/api-client";
 import { useAuth } from "@/auth/useAuth";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatRelativeTime } from "@/lib/format";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileData {
   user_id: string;
@@ -36,14 +44,42 @@ interface PendingCredit {
   job_title: string;
   character_name: string | null;
   status: string;
+  created_by_user_id: string;
+  created_at: string;
+  creator_name: string;
 }
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const api = useApiClient();
   const { user: currentUser } = useAuth();
+  const { toast } = useToast();
   const [pendingCredits, setPendingCredits] = useState<PendingCredit[]>([]);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [refreshLoading, setRefreshLoading] = useState(false);
+
+  // Smart error message mapper for common failure scenarios
+  const getSmartErrorMessage = (
+    errorMsg: string,
+    creditTitle: string,
+  ): string => {
+    if (errorMsg.includes("Cannot transition from VERIFIED")) {
+      return `"${creditTitle}" was already confirmed on another device. Refresh to update your list.`;
+    }
+    if (errorMsg.includes("Cannot transition from REJECTED")) {
+      return `"${creditTitle}" was already rejected on another device. Refresh to update your list.`;
+    }
+    if (errorMsg.includes("Credit not found")) {
+      return `"${creditTitle}" was deleted. Refresh your list to see current credits.`;
+    }
+    if (errorMsg.includes("Unauthorized") || errorMsg.includes("Forbidden")) {
+      return "You don't have permission to modify this credit. Please refresh and try again.";
+    }
+    if (errorMsg.includes("HTTP")) {
+      return `Network error: ${errorMsg}. Please check your connection and try again.`;
+    }
+    return errorMsg;
+  };
 
   const {
     data: profile,
@@ -59,11 +95,35 @@ export default function ProfilePage() {
   // Fetch pending credits only for current user viewing their own profile
   const isOwnProfile = currentUser?.username === profile?.username;
 
+  // Helper function to refetch pending credits
+  const refetchPendingCredits = async () => {
+    setRefreshLoading(true);
+    try {
+      const response = await api.get<{ credits: PendingCredit[] }>(
+        `/credits/pending`,
+      );
+      setPendingCredits(response.credits || []);
+      toast({
+        title: "Refreshed",
+        description: "Pending credits list updated",
+      });
+    } catch (err) {
+      toast({
+        title: "Refresh Failed",
+        description:
+          err instanceof Error ? err.message : "Could not refresh credits",
+        variant: "destructive",
+      });
+    } finally {
+      setRefreshLoading(false);
+    }
+  };
+
   const { data: pendingCreditsData, isLoading: creditsLoading } = useQuery({
     queryKey: ["pending-credits", profile?.user_id],
     queryFn: async () => {
       const response = await api.get<{ credits: PendingCredit[] }>(
-        `/credits/pending`
+        `/credits/pending`,
       );
       return response.credits || [];
     },
@@ -192,9 +252,31 @@ export default function ProfilePage() {
         <section className="py-12 lg:py-16 border-b border-border">
           <div className="container mx-auto px-6 lg:px-12">
             <div className="max-w-4xl mx-auto">
-              <h2 className="font-display text-2xl font-semibold text-foreground mb-8">
-                Pending Credits ({pendingCredits.length})
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display text-2xl font-semibold text-foreground">
+                  Pending Credits ({pendingCredits.length})
+                </h2>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={refetchPendingCredits}
+                  disabled={refreshLoading}
+                  className="gap-2"
+                  title="Refresh pending credits list"
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 ${
+                      refreshLoading ? "animate-spin" : ""
+                    }`}
+                  />
+                  {!refreshLoading && "Refresh"}
+                </Button>
+              </div>
+
+              <p className="text-sm text-muted-foreground mb-6">
+                Credits that others have added you to. Review and confirm if
+                they're accurate.
+              </p>
 
               <div className="space-y-4">
                 {pendingCredits.map((credit) => (
@@ -217,64 +299,133 @@ export default function ProfilePage() {
                           {credit.character_name &&
                             ` • ${credit.character_name}`}
                         </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Added by {credit.creator_name} •{" "}
+                          {formatRelativeTime(credit.created_at)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Review and confirm this credit is accurate
+                        </p>
                       </div>
 
                       <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="gold"
-                          onClick={async () => {
-                            setActionLoading(credit.id);
-                            try {
-                              await api.patch(
-                                `${
-                                  import.meta.env.VITE_API_URL
-                                }/api/bmdb/credits/${credit.id}`,
-                                { status: "VERIFIED" }
-                              );
-                              setPendingCredits(
-                                pendingCredits.filter((c) => c.id !== credit.id)
-                              );
-                            } catch (err) {
-                              console.error("Error verifying credit:", err);
-                            } finally {
-                              setActionLoading(null);
-                            }
-                          }}
-                          disabled={actionLoading === credit.id}
-                          className="gap-2"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          Verify
-                        </Button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="gold"
+                                onClick={async () => {
+                                  setActionLoading(credit.id);
+                                  try {
+                                    await api.patch(
+                                      `${
+                                        import.meta.env.VITE_API_URL
+                                      }/api/bmdb/credits/${credit.id}`,
+                                      { status: "VERIFIED" },
+                                    );
+                                    toast({
+                                      title: "Success",
+                                      description:
+                                        "Credit confirmed and added to your filmography",
+                                    });
+                                    // Refetch after brief delay to sync state
+                                    setTimeout(() => {
+                                      refetchPendingCredits();
+                                    }, 500);
+                                  } catch (err) {
+                                    const errorMessage =
+                                      err instanceof Error
+                                        ? err.message
+                                        : "Failed to confirm credit";
+                                    const smartMessage = getSmartErrorMessage(
+                                      errorMessage,
+                                      credit.project_title,
+                                    );
+                                    toast({
+                                      title: "Error",
+                                      description: smartMessage,
+                                      variant: "destructive",
+                                    });
+                                    console.error(
+                                      "Error confirming credit:",
+                                      err,
+                                    );
+                                  } finally {
+                                    setActionLoading(null);
+                                  }
+                                }}
+                                disabled={actionLoading === credit.id}
+                                className="gap-2"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                                Confirm
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Add this credit to your filmography</p>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={async () => {
-                            setActionLoading(credit.id);
-                            try {
-                              await api.patch(
-                                `${
-                                  import.meta.env.VITE_API_URL
-                                }/api/bmdb/credits/${credit.id}`,
-                                { status: "REJECTED" }
-                              );
-                              setPendingCredits(
-                                pendingCredits.filter((c) => c.id !== credit.id)
-                              );
-                            } catch (err) {
-                              console.error("Error rejecting credit:", err);
-                            } finally {
-                              setActionLoading(null);
-                            }
-                          }}
-                          disabled={actionLoading === credit.id}
-                          className="gap-2"
-                        >
-                          <XCircle className="h-4 w-4" />
-                          Reject
-                        </Button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={async () => {
+                                  setActionLoading(credit.id);
+                                  try {
+                                    await api.patch(
+                                      `${
+                                        import.meta.env.VITE_API_URL
+                                      }/api/bmdb/credits/${credit.id}`,
+                                      { status: "REJECTED" },
+                                    );
+                                    toast({
+                                      title: "Success",
+                                      description: "Credit removed from review",
+                                    });
+                                    // Refetch after brief delay to sync state
+                                    setTimeout(() => {
+                                      refetchPendingCredits();
+                                    }, 500);
+                                  } catch (err) {
+                                    const errorMessage =
+                                      err instanceof Error
+                                        ? err.message
+                                        : "Failed to reject credit";
+                                    const smartMessage = getSmartErrorMessage(
+                                      errorMessage,
+                                      credit.project_title,
+                                    );
+                                    toast({
+                                      title: "Error",
+                                      description: smartMessage,
+                                      variant: "destructive",
+                                    });
+                                    console.error(
+                                      "Error rejecting credit:",
+                                      err,
+                                    );
+                                  } finally {
+                                    setActionLoading(null);
+                                  }
+                                }}
+                                disabled={actionLoading === credit.id}
+                                className="gap-2"
+                              >
+                                <XCircle className="h-4 w-4" />
+                                Not Me
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>
+                                Reject this credit—you can request changes from{" "}
+                                {credit.creator_name}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                     </div>
                   </motion.div>

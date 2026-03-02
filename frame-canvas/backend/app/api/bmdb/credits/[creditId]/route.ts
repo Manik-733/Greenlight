@@ -22,7 +22,7 @@ interface CreditResponse {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { creditId: string } }
+  { params }: { params: { creditId: string } },
 ) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -65,7 +65,7 @@ export async function PATCH(
         updated_at,
         verified_at,
         projects:project_id(id, created_by_user_id)
-      `
+      `,
       )
       .eq("id", creditId)
       .single();
@@ -82,7 +82,7 @@ export async function PATCH(
     if (!body.status) {
       return NextResponse.json(
         { error: "status is required for update" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -90,15 +90,28 @@ export async function PATCH(
     if (!["VERIFIED", "REJECTED", "REMOVED"].includes(body.status)) {
       return NextResponse.json(
         { error: "status must be 'VERIFIED', 'REJECTED', or 'REMOVED'" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Check if credit is in PENDING_ACCEPTANCE state
-    if (credit.status !== "PENDING_ACCEPTANCE") {
+    // Define allowed status transitions (state machine)
+    const allowedTransitions: Record<string, string[]> = {
+      PENDING_ACCEPTANCE: ["VERIFIED", "REJECTED", "REMOVED"],
+      UNCLAIMED: [],
+      VERIFIED: [],
+      REJECTED: [],
+      REMOVED: [],
+    };
+
+    // Check if transition is allowed
+    const currentStatus = credit.status as keyof typeof allowedTransitions;
+    if (!allowedTransitions[currentStatus]?.includes(body.status)) {
+      const allowed = allowedTransitions[currentStatus] || [];
       return NextResponse.json(
-        { error: "Credit must be in PENDING_ACCEPTANCE status to update" },
-        { status: 400 }
+        {
+          error: `Cannot transition from ${credit.status} to ${body.status}. Allowed transitions: ${allowed.length > 0 ? allowed.join(", ") : "none"}`,
+        },
+        { status: 400 },
       );
     }
 
@@ -125,7 +138,7 @@ export async function PATCH(
       });
       return NextResponse.json(
         { error: "Forbidden - you cannot perform this action" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -152,7 +165,7 @@ export async function PATCH(
       console.error("Error updating credit:", updateError);
       return NextResponse.json(
         { error: "Failed to update credit" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -176,7 +189,7 @@ export async function PATCH(
     console.error("Error in PATCH /credits/:creditId:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

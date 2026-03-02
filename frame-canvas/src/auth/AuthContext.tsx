@@ -25,17 +25,26 @@ export interface AuthContextType {
     email: string,
     password: string,
     username: string,
-    displayName: string
+    displayName: string,
   ) => Promise<void>;
   signOut: () => Promise<void>;
   refetchProfile: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
+  undefined,
 );
 
-const API_BASE = import.meta.env.VITE_API_URL || "/api/bmdb";
+const getApiBase = () => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (!baseUrl) return "/api/bmdb";
+  // If baseUrl already contains /api/bmdb, use it as-is
+  if (baseUrl.includes("/api/bmdb")) return baseUrl;
+  // Otherwise if it's a full URL, append /api/bmdb
+  return baseUrl.startsWith("http") ? `${baseUrl}/api/bmdb` : baseUrl;
+};
+
+const API_BASE = getApiBase();
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -48,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Fetch profile via backend API using current session token
   const fetchProfileFromApi = useCallback(async (token: string) => {
     try {
+      console.log("Fetching profile from API:", API_BASE);
       const response = await fetch(`${API_BASE}/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -55,13 +65,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
 
+      console.log("Profile API response status:", response.status);
+
       if (!response.ok) {
         console.warn(`Failed to fetch profile: ${response.status}`);
         setProfile(null);
         return;
       }
 
-      const { profile: profileData } = await response.json();
+      const data = await response.json();
+      console.log("Profile API response data:", data);
+
+      const { profile: profileData } = data;
+      console.log("Profile data extracted:", profileData);
+
       setProfile(profileData);
     } catch (err) {
       console.error("Error fetching profile from API:", err);
@@ -71,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Refetch profile helper - can be called manually
   const refetchProfile = useCallback(async () => {
-    const token = localStorage.getItem("bmdb_token");
+    const token = localStorage.getItem("greenlight_token");
     if (token) {
       await fetchProfileFromApi(token);
     }
@@ -90,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           setUser(data.session.user);
           // Restore token to localStorage
           if (data.session.access_token) {
-            localStorage.setItem("bmdb_token", data.session.access_token);
+            localStorage.setItem("greenlight_token", data.session.access_token);
             // Fetch profile from backend API
             await fetchProfileFromApi(data.session.access_token);
           }
@@ -112,12 +129,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(authSession?.user ?? null);
 
       if (authSession?.access_token) {
-        localStorage.setItem("bmdb_token", authSession.access_token);
+        localStorage.setItem("greenlight_token", authSession.access_token);
         // Fetch profile from backend API on session change
         await fetchProfileFromApi(authSession.access_token);
       } else {
         setProfile(null);
-        localStorage.removeItem("bmdb_token");
+        localStorage.removeItem("greenlight_token");
       }
     });
 
@@ -143,25 +160,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string,
     password: string,
     username: string,
-    displayName: string
+    displayName: string,
   ) => {
     try {
       setLoading(true);
-      const { error, data } = await supabase.auth.signUp({
+      const fullUrl = `${API_BASE}/auth/signup`;
+      console.log("Calling signup API:", fullUrl);
+      console.log("Request data:", {
+        email,
+        username,
+        displayName,
+        password: "***",
+      });
+
+      // Use backend API to create account and profile
+      const response = await fetch(fullUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          username,
+          displayName,
+        }),
+      });
+
+      console.log("Signup response status:", response.status);
+      const responseData = await response.json();
+      console.log("Signup response data:", responseData);
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Failed to create account");
+      }
+
+      // Give Supabase time to confirm the email
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Try to sign in the user
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (error) throw error;
 
-      if (data.user) {
-        // Create profile entry
-        const { error: profileError } = await supabase.from("profiles").insert({
-          user_id: data.user.id,
-          username,
-          display_name: displayName,
-        });
-        if (profileError) throw profileError;
+      // If email not confirmed error, let the user know to login manually
+      if (signInError?.message.includes("Email not confirmed")) {
+        throw new Error(
+          "Account created! Please log in now. Your email is being confirmed.",
+        );
       }
+
+      if (signInError) throw signInError;
     } finally {
       setLoading(false);
     }
@@ -170,9 +220,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signOut = async () => {
     try {
       setLoading(true);
-      localStorage.removeItem("bmdb_token");
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Clear local storage first
+      localStorage.removeItem("greenlight_token");
+
+      // Try to sign out from Supabase (may fail if session is missing, that's ok)
+      try {
+        await supabase.auth.signOut({ scope: "local" });
+      } catch (error) {
+        console.warn(
+          "Supabase signOut failed (session may already be cleared):",
+          error,
+        );
+        // Continue anyway - we cleared the local token
+      }
+
+      // Clear auth state manually
+      setSession(null);
+      setUser(null);
+      setProfile(null);
     } finally {
       setLoading(false);
     }

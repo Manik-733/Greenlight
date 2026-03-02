@@ -8,6 +8,9 @@ interface PendingCredit {
   job_title: string;
   character_name: string | null;
   status: string;
+  created_by_user_id: string;
+  created_at: string;
+  creator_name: string;
 }
 
 export async function GET(request: NextRequest) {
@@ -42,8 +45,11 @@ export async function GET(request: NextRequest) {
         job_title,
         character_name,
         status,
-        projects:project_id(title)
-      `
+        created_by_user_id,
+        created_at,
+        projects:project_id(title),
+        created_by:created_by_user_id(display_name, username)
+      `,
       )
       .eq("credited_user_id", user.id)
       .eq("status", "PENDING_ACCEPTANCE")
@@ -53,25 +59,33 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching pending credits:", creditsError);
       return NextResponse.json(
         { error: "Failed to fetch pending credits" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
-    const formattedCredits: PendingCredit[] = (credits || []).map((credit) => ({
-      id: credit.id,
-      project_id: credit.project_id,
-      project_title: (credit.projects as any)?.title || "Unknown Project",
-      job_title: credit.job_title,
-      character_name: credit.character_name,
-      status: credit.status,
-    }));
+    const formattedCredits: PendingCredit[] = (credits || []).map((credit) => {
+      const creator = credit.created_by as any;
+      const creatorName =
+        creator?.display_name || creator?.username || "Unknown";
+      return {
+        id: credit.id,
+        project_id: credit.project_id,
+        project_title: (credit.projects as any)?.title || "Unknown Project",
+        job_title: credit.job_title,
+        character_name: credit.character_name,
+        status: credit.status,
+        created_by_user_id: credit.created_by_user_id,
+        created_at: credit.created_at,
+        creator_name: creatorName,
+      };
+    });
 
     return NextResponse.json({ credits: formattedCredits });
   } catch (error) {
     console.error("Error in GET /credits/pending:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

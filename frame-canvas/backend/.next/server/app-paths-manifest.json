@@ -1,1 +1,5 @@
-{}
+{
+  "/api/bmdb/discover/route": "app/api/bmdb/discover/route.js",
+  "/api/bmdb/me/route": "app/api/bmdb/me/route.js",
+  "/api/bmdb/profiles/[username]/route": "app/api/bmdb/profiles/[username]/route.js"
+}

@@ -35,7 +35,7 @@ export default function Login() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to sign in. Please try again."
+          : "Failed to sign in. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -55,7 +55,7 @@ export default function Login() {
               Welcome Back
             </h1>
             <p className="mt-2 text-muted-foreground">
-              Sign in to your BMDB account
+              Sign in to your Greenlight account
             </p>
           </div>
 

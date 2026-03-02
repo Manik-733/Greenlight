@@ -1,44 +1,46 @@
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Search, User, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Search, User, Menu, X, LogOut } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/auth/useAuth";
 
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/discover', label: 'Discover' },
-  { href: '/search', label: 'Search' },
+  { href: "/", label: "Home" },
+  { href: "/discover", label: "Discover" },
+  { href: "/search", label: "Search" },
 ];
 
 export function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // TODO: Replace with actual auth state
-  const isLoggedIn = false;
+  const { user, profile, signOut, loading } = useAuth();
+  const isLoggedIn = !!user && !loading;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-display text-2xl lg:text-3xl font-semibold text-foreground tracking-tight">
-              BM<span className="text-primary">DB</span>
+      <div className="w-full px-6 lg:px-12">
+        <div className="flex items-center justify-between h-24 lg:h-28">
+          {/* Logo - Left */}
+          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+            <span className="font-display text-4xl lg:text-5xl font-semibold text-foreground tracking-tight">
+              Green<span className="text-primary">light</span>
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Center */}
+          <nav className="hidden md:flex items-center gap-10 absolute left-1/2 -translate-x-1/2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "relative font-body text-sm tracking-wide transition-colors duration-200",
+                  "relative font-body text-lg tracking-wide transition-colors duration-200 font-medium",
                   location.pathname === link.href
                     ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {link.label}
@@ -53,31 +55,50 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Desktop Actions - Right */}
+          <div className="hidden md:flex items-center gap-6 flex-shrink-0">
             <Link to="/search">
-              <Button variant="ghost" size="icon-sm">
-                <Search className="h-4 w-4" />
+              <Button variant="ghost" size="icon">
+                <Search className="h-6 w-6" />
               </Button>
             </Link>
-            {isLoggedIn ? (
-              <Link to="/dashboard">
-                <Button variant="ghost" size="icon-sm">
-                  <User className="h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <div className="flex items-center gap-2">
+            {!user ? (
+              <div className="flex items-center gap-3">
                 <Link to="/login">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="lg">
                     Sign In
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="gold" size="sm">
+                  <Button variant="gold" size="lg">
                     Join
                   </Button>
                 </Link>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                {profile?.username && (
+                  <Link to={`/u/${profile.username}`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Go to your profile"
+                    >
+                      <User className="h-6 w-6" />
+                    </Button>
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={async () => {
+                    await signOut();
+                    navigate("/");
+                  }}
+                  title="Sign out"
+                >
+                  <LogOut className="h-6 w-6" />
+                </Button>
               </div>
             )}
           </div>
@@ -115,20 +136,14 @@ export function Header() {
                   "font-body text-lg py-2 transition-colors duration-200",
                   location.pathname === link.href
                     ? "text-foreground"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {link.label}
               </Link>
             ))}
             <div className="border-t border-border pt-4 mt-2 flex flex-col gap-3">
-              {isLoggedIn ? (
-                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    Dashboard
-                  </Button>
-                </Link>
-              ) : (
+              {!user ? (
                 <>
                   <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" className="w-full">
@@ -137,9 +152,33 @@ export function Header() {
                   </Link>
                   <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="gold" className="w-full">
-                      Join BMDB
+                      Join Greenlight
                     </Button>
                   </Link>
+                </>
+              ) : (
+                <>
+                  {profile?.username && (
+                    <Link
+                      to={`/u/${profile.username}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button variant="outline" className="w-full">
+                        My Profile
+                      </Button>
+                    </Link>
+                  )}
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={async () => {
+                      await signOut();
+                      setMobileMenuOpen(false);
+                      navigate("/");
+                    }}
+                  >
+                    Sign Out
+                  </Button>
                 </>
               )}
             </div>

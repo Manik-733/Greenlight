@@ -119,7 +119,7 @@ export default function EditProject() {
     queryKey: ["project", slug],
     queryFn: async () => {
       const response = await apiClient.get<Project>(
-        `${import.meta.env.VITE_API_URL}/api/bmdb/projects/slug/${slug}`
+        `${import.meta.env.VITE_API_URL}/api/bmdb/projects/slug/${slug}`,
       );
       setFormData({
         title: response.title,
@@ -141,7 +141,7 @@ export default function EditProject() {
       const response = await apiClient.get<{ credits: Credit[] }>(
         `${import.meta.env.VITE_API_URL}/api/bmdb/projects/${
           project.id
-        }/credits/all`
+        }/credits/all`,
       );
       setCredits(response.credits || []);
       return response.credits || [];
@@ -195,7 +195,7 @@ export default function EditProject() {
           project_type: formData.projectType,
           description: formData.description.trim() || null,
           poster_url: formData.posterUrl.trim() || null,
-        }
+        },
       );
 
       setSaveSuccess(true);
@@ -224,7 +224,7 @@ export default function EditProject() {
           description: formData.description.trim() || null,
           poster_url: formData.posterUrl.trim() || null,
           publish: true,
-        }
+        },
       );
 
       setSaveSuccess(true);
@@ -270,7 +270,7 @@ export default function EditProject() {
           character_name: creditFormData.character_name.trim() || null,
           credited_user_id: creditFormData.credited_user_id || null,
           credited_name: creditFormData.credited_name.trim() || null,
-        }
+        },
       );
 
       // Optimistically update UI
@@ -322,7 +322,7 @@ export default function EditProject() {
       }>(
         `${
           import.meta.env.VITE_API_URL
-        }/api/bmdb/users/search?q=${encodeURIComponent(query)}`
+        }/api/bmdb/users/search?q=${encodeURIComponent(query)}`,
       );
       setSearchResults(response.results || []);
     } catch (err) {
@@ -336,7 +336,7 @@ export default function EditProject() {
   const handleSelectUser = (
     userId: string,
     username: string,
-    displayName: string
+    displayName: string,
   ) => {
     setCreditFormData({
       ...creditFormData,
@@ -612,18 +612,18 @@ export default function EditProject() {
                           credit.status === "VERIFIED"
                             ? "default"
                             : credit.status === "PENDING_ACCEPTANCE"
-                            ? "secondary"
-                            : "outline"
+                              ? "secondary"
+                              : "outline"
                         }
                         className="ml-4 shrink-0"
                       >
                         {credit.status === "VERIFIED"
                           ? "Verified"
                           : credit.status === "PENDING_ACCEPTANCE"
-                          ? "Pending"
-                          : credit.status === "UNCLAIMED"
-                          ? "Unclaimed"
-                          : credit.status}
+                            ? "Pending"
+                            : credit.status === "UNCLAIMED"
+                              ? "Unclaimed"
+                              : credit.status}
                       </Badge>
                     </div>
                   ))}
@@ -761,7 +761,7 @@ export default function EditProject() {
                           disabled={creditLoading}
                         />
                         <Label htmlFor="userRadio" className="cursor-pointer">
-                          BMDB User
+                          Greenlight User
                         </Label>
                       </div>
                       {creditFormData.useExistingUser && (
@@ -791,7 +791,7 @@ export default function EditProject() {
                                       handleSelectUser(
                                         user.user_id,
                                         user.username,
-                                        user.display_name
+                                        user.display_name,
                                       )
                                     }
                                     className="w-full text-left px-3 py-2 hover:bg-secondary transition-colors border-b border-border/50 last:border-b-0"
@@ -867,8 +867,8 @@ export default function EditProject() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Publish Project?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Your project will be visible to everyone on BMDB. You can
-                    still make edits after publishing.
+                    Your project will be visible to everyone on Greenlight. You
+                    can still make edits after publishing.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogAction

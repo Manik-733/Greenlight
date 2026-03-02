@@ -76,7 +76,7 @@ export default function CreateProject() {
           title: formData.title.trim(),
           project_type: formData.projectType,
           description: formData.description.trim() || null,
-        }
+        },
       );
 
       // Redirect to project edit page
@@ -104,7 +104,7 @@ export default function CreateProject() {
                 Create a New Project
               </h1>
               <p className="text-muted-foreground">
-                Add your film, short, or creative work to BMDB
+                Add your film, short, or creative work to Greenlight
               </p>
             </div>
 

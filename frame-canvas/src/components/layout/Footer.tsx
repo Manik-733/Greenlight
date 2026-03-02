@@ -9,7 +9,7 @@ export function Footer() {
           <div className="md:col-span-1">
             <Link to="/" className="inline-block">
               <span className="font-display text-2xl font-semibold text-foreground tracking-tight">
-                BM<span className="text-primary">DB</span>
+                Green<span className="text-primary">light</span>
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground leading-relaxed max-w-xs">
@@ -92,7 +92,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} BMDB. All rights reserved.
+            © {new Date().getFullYear()} Greenlight. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
             Made for filmmakers, by filmmakers.

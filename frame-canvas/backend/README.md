@@ -1,6 +1,6 @@
-# BMDB Backend
+# Greenlight Backend
 
-Next.js backend for BMDB with Supabase integration. Provides API routes, RPC functions, and database schema for the BMDB platform.
+Next.js backend for Greenlight with Supabase integration. Provides API routes, RPC functions, and database schema for the Greenlight platform.
 
 ## Features
 
@@ -35,6 +35,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 Get these values from your Supabase project dashboard:
+
 - Go to Project Settings → API
 - Copy the Project URL and anon/public key
 - Copy the service_role key (keep this secret!)
@@ -128,6 +129,7 @@ The API will be available at `http://localhost:3000/api/bmdb`
 All business logic is handled via Supabase RPC functions. See `supabase/migrations/002_rpc_functions.sql` for the complete list.
 
 Key functions:
+
 - `set_project_rating(project_id, rating)` - Rate a project
 - `create_project_comment(project_id, body)` - Create a comment
 - `edit_project_comment(comment_id, body)` - Edit own comment
@@ -168,6 +170,7 @@ npm start
 ## Testing
 
 API routes can be tested using tools like:
+
 - Postman
 - curl
 - The frontend application
@@ -207,6 +210,7 @@ backend/
 ### RLS Policy Errors
 
 If you're getting permission errors, check:
+
 1. User is authenticated (has valid session)
 2. RLS policies allow the operation
 3. User has required permissions (project admin, platform admin, etc.)
@@ -214,6 +218,7 @@ If you're getting permission errors, check:
 ### RPC Function Errors
 
 RPC functions are secured with `SECURITY DEFINER` and check permissions internally. Common issues:
+
 - User not authenticated
 - Insufficient permissions
 - Invalid input parameters
@@ -233,4 +238,3 @@ Make sure all required environment variables are set. The app will fail to start
 ## License
 
 MIT
-

@@ -17,9 +17,9 @@ export function useApiClient() {
 
   const fetchJson = async <T>(
     url: string,
-    options?: FetchOptions
+    options?: FetchOptions,
   ): Promise<T> => {
-    const token = localStorage.getItem("bmdb_token");
+    const token = localStorage.getItem("greenlight_token");
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export function useApiClient() {
 
     // Handle 401 Unauthorized
     if (response.status === 401) {
-      localStorage.removeItem("bmdb_token");
+      localStorage.removeItem("greenlight_token");
       await signOut();
       navigate("/login");
       throw new Error("Session expired. Please log in again.");

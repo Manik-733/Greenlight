@@ -1,10 +1,11 @@
-# BMDB - The Database for Student & Independent Filmmakers
+# Greenlight - The Database for Student & Independent Filmmakers
 
-BMDB is the definitive database for student and independent cinema. Showcase your work, build your filmography, and get discovered by the industry.
+Greenlight is the definitive database for student and independent cinema. Showcase your work, build your filmography, and get discovered by the industry.
 
 ## Project Overview
 
-BMDB consists of:
+Greenlight consists of:
+
 - **Frontend**: React + Vite + TypeScript + shadcn/ui (this directory)
 - **Backend**: Next.js + Supabase (see `/backend` directory)
 
@@ -21,6 +22,7 @@ BMDB consists of:
 ## Tech Stack
 
 ### Frontend
+
 - Vite
 - React 18
 - TypeScript
@@ -29,6 +31,7 @@ BMDB consists of:
 - React Router
 
 ### Backend
+
 - Next.js (App Router)
 - Supabase (PostgreSQL, Auth, Storage)
 - Row Level Security (RLS)
@@ -73,13 +76,16 @@ BMDB/
 ## Environment Variables
 
 ### Frontend
+
 Create a `.env` file in the root directory:
+
 ```
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### Backend
+
 See backend documentation for required environment variables.
 
 ## Contributing
