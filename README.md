@@ -212,7 +212,7 @@ We welcome contributions! Here's how to get started:
 
 ## Bug Reports & Feature Requests
 
-Found a bug or have a feature idea? Please open an [Issue](https://github.com/yourusername/greenlight/issues) with:
+Found a bug or have a feature idea? Please open a GitHub issue with:
 
 - Clear description of the issue/feature
 - Steps to reproduce (for bugs)
@@ -238,8 +238,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions or support:
 
-- Open an [Issue](https://github.com/yourusername/greenlight/issues)
-- Check existing [Discussions](https://github.com/yourusername/greenlight/discussions)
 - Review [SETUP.md](./frame-canvas/backend/SETUP.md) for configuration help
 
 ---
