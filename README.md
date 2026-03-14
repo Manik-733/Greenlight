@@ -1,4 +1,4 @@
-# 🎬 Greenlight
+# Greenlight
 
 > The definitive database for student and independent cinema. Showcase your work, build your filmography, and get discovered by the industry.
 
@@ -7,7 +7,7 @@
 [![React](https://img.shields.io/badge/React-18-61dafb?logo=react)](https://react.dev/)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 
-## 🌟 Features
+## Features
 
 - **Project Management** - Create, edit, and publish film projects with rich media support
 - **Credit System** - Manage cast and crew credits with verification workflows
@@ -17,9 +17,10 @@
 - **Project Collaboration** - Manage team members and project access
 - **Content Moderation** - Report and moderation tools for community safety
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
+
 - **React 18** - UI library
 - **Vite** - Lightning-fast build tool
 - **TypeScript** - Type-safe development
@@ -30,27 +31,31 @@
 - **Supabase JS Client** - Backend integration
 
 ### Backend
+
 - **Next.js 14** - React framework with API routes
 - **Supabase** - PostgreSQL database & authentication
 - **Row Level Security (RLS)** - Database-level access control
 - **TypeScript** - Type-safe backend code
 - **Zod** - Schema validation
 
-## 📋 Getting Started
+## Getting Started
 
 ### Prerequisites
+
 - **Node.js** 18+ and **npm** or **bun**
 - **Supabase** account (free tier available)
 
 ### Installation
 
 #### 1. Clone the repository
+
 ```bash
 git clone https://github.com/yourusername/greenlight.git
 cd greenlight
 ```
 
 #### 2. Frontend Setup
+
 ```bash
 cd frame-canvas
 npm install
@@ -61,6 +66,7 @@ npm run dev
 The frontend will be available at `http://localhost:8080`
 
 #### 3. Backend Setup
+
 ```bash
 cd frame-canvas/backend
 npm install
@@ -86,6 +92,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 Apply migrations to set up the schema:
 
 **Option A: Via Supabase Dashboard**
+
 1. Open your Supabase project
 2. Go to SQL Editor
 3. Run migrations in order:
@@ -94,11 +101,12 @@ Apply migrations to set up the schema:
    - `supabase/migrations/003_data_integrity_constraints.sql`
 
 **Option B: Via Supabase CLI**
+
 ```bash
 supabase db push
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 greenlight/
@@ -129,9 +137,10 @@ greenlight/
 └── README.md                      # This file
 ```
 
-## 🚀 Available Scripts
+## Available Scripts
 
 ### Frontend
+
 ```bash
 npm run dev       # Start development server
 npm run build     # Build for production
@@ -140,6 +149,7 @@ npm run lint      # Run ESLint
 ```
 
 ### Backend
+
 ```bash
 npm run dev       # Start Next.js dev server
 npm run build     # Build for production
@@ -147,7 +157,7 @@ npm run start     # Start production server
 npm run type-check # TypeScript type checking
 ```
 
-## 🔐 Authentication
+## Authentication
 
 Greenlight uses **Supabase Authentication** with Row Level Security (RLS):
 
@@ -158,7 +168,7 @@ Greenlight uses **Supabase Authentication** with Row Level Security (RLS):
 
 See [SETUP.md](./frame-canvas/backend/SETUP.md) for detailed authentication configuration.
 
-## 📚 API Documentation
+## API Documentation
 
 All API routes require authentication (except public discovery endpoints).
 
@@ -181,7 +191,7 @@ curl -X POST http://localhost:3000/api/bmdb/projects/{projectId}/comments \
   -d '{"text": "Great film!", "rating": 9}'
 ```
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how to get started:
 
@@ -200,7 +210,7 @@ We welcome contributions! Here's how to get started:
 - Test your changes before submitting a PR
 - Update documentation as needed
 
-## 🐛 Bug Reports & Feature Requests
+## Bug Reports & Feature Requests
 
 Found a bug or have a feature idea? Please open an [Issue](https://github.com/yourusername/greenlight/issues) with:
 
@@ -209,28 +219,29 @@ Found a bug or have a feature idea? Please open an [Issue](https://github.com/yo
 - Expected vs actual behavior
 - Screenshots if applicable
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👥 Authors
+## Authors
 
 - **Manik Singh** - Initial development
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **shadcn/ui** for beautiful, accessible UI components
 - **Supabase** for backend infrastructure
 - **Vercel** for deployment and Next.js
 - The student filmmaker community for inspiration
 
-## 📞 Support
+## Support
 
 For questions or support:
+
 - Open an [Issue](https://github.com/yourusername/greenlight/issues)
 - Check existing [Discussions](https://github.com/yourusername/greenlight/discussions)
 - Review [SETUP.md](./frame-canvas/backend/SETUP.md) for configuration help
 
 ---
 
-**Made with 🎬 for filmmakers, by filmmakers.**
+**Made for filmmakers, by filmmakers.**
