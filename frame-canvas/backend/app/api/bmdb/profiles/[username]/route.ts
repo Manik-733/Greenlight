@@ -28,7 +28,7 @@ export async function GET(
     if (!username) {
       return NextResponse.json(
         { error: "Username is required" },
-        { status: 400 },
+        { status: 400, headers: corsHeaders },
       );
     }
 
@@ -51,7 +51,10 @@ export async function GET(
 
     if (profileError || !profile) {
       console.error("Profile not found:", profileError);
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404, headers: corsHeaders },
+      );
     }
 
     // Count verified credits for this user
