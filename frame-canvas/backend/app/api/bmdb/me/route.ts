@@ -149,9 +149,17 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function OPTIONS(request: NextRequest) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: corsHeaders,
-  });
+export async function OPTIONS() {
+  const response = new NextResponse(null, { status: 200 });
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS",
+  );
+  response.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
+  response.headers.set("Access-Control-Max-Age", "86400");
+  return response;
 }
