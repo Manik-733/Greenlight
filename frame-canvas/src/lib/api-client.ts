@@ -1,7 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/useAuth";
 
-const API_BASE = import.meta.env.VITE_API_URL || "/api/bmdb";
+const getApiBase = () => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  if (!baseUrl) return "/api/bmdb";
+  // Accept either a root backend URL or one that already includes /api/bmdb.
+  if (baseUrl.includes("/api/bmdb")) return baseUrl;
+  return baseUrl.startsWith("http") ? `${baseUrl}/api/bmdb` : baseUrl;
+};
+
+const API_BASE = getApiBase();
 
 interface FetchOptions extends RequestInit {
   headers?: Record<string, string>;

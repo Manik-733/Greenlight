@@ -318,12 +318,9 @@ export default function ProfilePage() {
                                 onClick={async () => {
                                   setActionLoading(credit.id);
                                   try {
-                                    await api.patch(
-                                      `${
-                                        import.meta.env.VITE_API_URL
-                                      }/api/bmdb/credits/${credit.id}`,
-                                      { status: "VERIFIED" },
-                                    );
+                                    await api.patch(`/credits/${credit.id}`, {
+                                      status: "VERIFIED",
+                                    });
                                     toast({
                                       title: "Success",
                                       description:
@@ -375,12 +372,9 @@ export default function ProfilePage() {
                                 onClick={async () => {
                                   setActionLoading(credit.id);
                                   try {
-                                    await api.patch(
-                                      `${
-                                        import.meta.env.VITE_API_URL
-                                      }/api/bmdb/credits/${credit.id}`,
-                                      { status: "REJECTED" },
-                                    );
+                                    await api.patch(`/credits/${credit.id}`, {
+                                      status: "REJECTED",
+                                    });
                                     toast({
                                       title: "Success",
                                       description: "Credit removed from review",
