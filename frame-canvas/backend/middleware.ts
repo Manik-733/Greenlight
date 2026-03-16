@@ -4,7 +4,7 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3000",
   "http://localhost:5173",
   "http://localhost:8080",
-  "https://greenlight-4jt7-dcw75wxkc-manik-singhs-projects.vercel.app",
+  "https://greenlight-4jt7-efvrx64bu-manik-singhs-projects.vercel.app",
   "https://greenlight-4jt7.vercel.app",
 ];
 
